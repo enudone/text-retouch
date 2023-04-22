@@ -73,10 +73,14 @@ if retouch_button and uploaded_file and input_text:
         retouched_image_rgb = adjust_luminance(image_rgb, luminance_score)
 
         # 元画像とレタッチ済み画像を表示
-        st.subheader("元画像")
-        st.image(image_rgb, width=400)
-        st.subheader("レタッチ済み画像")
-        st.image(retouched_image_rgb, width=400)
+        col1, col2 = st.columns(2)  # 2つのカラムを作成
+
+        with col1:
+            st.subheader("元画像")
+            st.image(image_rgb, use_column_width="auto")
+        with col2:
+            st.subheader("レタッチ済み画像")
+            st.image(retouched_image_rgb, use_column_width="auto")
     except KeyError:
         st.error(f"入力されたテキスト「{input_text}」では画像をレタッチするためのスコアを算出できませんでした。より一般的な単語でお試しください。")
 
