@@ -76,12 +76,12 @@ if retouch_button and uploaded_file and input_text:
         col1, col2 = st.columns(2)  # 2つのカラムを作成
 
         with col1:
-            st.subheader("元画像")
+            st.write("元画像")
             st.image(image_rgb, use_column_width="auto")
         with col2:
-            st.subheader("レタッチ済み画像")
+            st.write(f"レタッチ画像（適用した単語「{input_text}」）")
             st.image(retouched_image_rgb, use_column_width="auto")
     except KeyError:
-        st.error(f"入力されたテキスト「{input_text}」では画像をレタッチするためのスコアを算出できませんでした。より一般的な単語でお試しください。")
+        st.error(f"入力された単語「{input_text}」では画像をレタッチするためのスコアを算出できませんでした。より一般的な単語でお試しください。")
 
 
