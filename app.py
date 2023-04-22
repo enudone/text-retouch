@@ -4,20 +4,9 @@ import numpy as np
 import gensim
 
 # サイドバーのUI
-uploaded_file = st.sidebar.file_uploader("画像をアップロード", type=["jpg", "png", "jpeg"])
-input_text = st.sidebar.text_input("レタッチに適用する単語を入力")
-retouch_button = st.sidebar.button("レタッチする")
-# download_button = st.sidebar.button("編集後の画像をダウンロード")
-st.sidebar.write('このアプリは、東北大学 乾・鈴木研究室が作成した日本語エンティティベクトル（2017年2月1日版）を使用しています。詳細およびダウンロードは、東北大学 乾・鈴木研究室のウェブサイト（ http://www.cl.ecei.tohoku.ac.jp/~m-suzuki/jawiki_vector/ ）で確認ができます。このリソースは CC BY-SA 4.0 の下で提供されています。')
+uploaded_file = st.sidebar.file_uploader("■画像アップロード", type=["jpg", "png", "jpeg"])
 
-# ページタイトル
-st.title("Text-Retouch")
-
-# 編集前写真の表示セクション
-st.subheader("アップロード画像")
-if uploaded_file is None:
-    st.write("No Image")
-else:
+if uploaded_file:
     # アップロードされたファイルからバイトデータを読み込み、
     # それを bytearray に変換し、さらにそのデータを np.uint8 型の NumPy 配列に変換
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
@@ -25,8 +14,15 @@ else:
     image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     # RGB 形式に変換
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    st.image(image_rgb, width=400)
+    st.sidebar.image(image_rgb, width=100) # アップロード画像のプレビュー
 
+input_text = st.sidebar.text_input("■レタッチに適用する単語を入力")
+retouch_button = st.sidebar.button("レタッチする")
+# download_button = st.sidebar.button("編集後の画像をダウンロード")
+st.sidebar.write('このアプリは、東北大学 乾・鈴木研究室が作成した日本語エンティティベクトル（2017年2月1日版）を使用しています。詳細およびダウンロードは、東北大学 乾・鈴木研究室のウェブサイト（ http://www.cl.ecei.tohoku.ac.jp/~m-suzuki/jawiki_vector/ ）で確認ができます。このリソースは CC BY-SA 4.0 の下で提供されています。')
+
+# ページタイトル
+st.title("Text-Retouch")
 
 # 学習済みの日本語ベクトルデータの読み込み
 model = gensim.models.KeyedVectors.load_word2vec_format('entity_vector/entity_vector.model.bin', binary=True)
@@ -52,11 +48,29 @@ def get_similarity_score(target, word_list):
             raise KeyError # エラーを呼び出し元に伝達
     return total_similarity / len(word_list)
 
+# 画像の明るさを調整する関数
+# img: レタッチ対象の画像
+# lumi_score: 明るさ調整用スコア
+def adjust_luminance(img,lumi_score):
+    alpha = 1.0 + (lumi_score * 5)  # 明るさの修正値を設定
+    # print('alpha: ', alpha)
+    return cv2.convertScaleAbs(img, alpha=alpha, beta=0)
+
 # レタッチボタンが押されたときの処理
 if retouch_button and uploaded_file and input_text:
     try:
+        # 明るさ調整用スコアを取得
         luminance_score = get_luminance_score(input_text)
-        st.write(f"明るさ調整用スコア: {luminance_score}")
+        # st.write(f"明るさ調整用スコア: {luminance_score}")
+
+        # レタッチ済み画像を取得
+        retouched_image_rgb = adjust_luminance(image_rgb, luminance_score)
+
+        # 元画像とレタッチ済み画像を表示
+        st.subheader("元画像")
+        st.image(image_rgb, width=400)
+        st.subheader("レタッチ済み画像")
+        st.image(retouched_image_rgb, width=400)
     except KeyError:
         st.error(f"入力されたテキスト {input_text} では画像をレタッチするためのスコアを算出できませんでした。より一般的な単語でお試しください。")
 
