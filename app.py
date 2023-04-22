@@ -24,7 +24,7 @@ else:
     image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     # RGB 形式に変換
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    st.image(image_rgb, use_column_width=True)
+    st.image(image_rgb, width=400)
 
 
 # 学習済みの日本語ベクトルデータの読み込み
