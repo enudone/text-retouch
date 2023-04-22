@@ -19,10 +19,15 @@ if uploaded_file:
 input_text = st.sidebar.text_input("■レタッチに適用する単語を入力")
 retouch_button = st.sidebar.button("レタッチする")
 # download_button = st.sidebar.button("編集後の画像をダウンロード")
+st.sidebar.divider()
 st.sidebar.write('このアプリは、東北大学 乾・鈴木研究室が作成した日本語エンティティベクトル（2017年2月1日版）を使用しています。詳細およびダウンロードは、東北大学 乾・鈴木研究室のウェブサイト（ http://www.cl.ecei.tohoku.ac.jp/~m-suzuki/jawiki_vector/ ）で確認ができます。このリソースは CC BY-SA 4.0 の下で提供されています。')
 
-# ページタイトル
+# ページタイトル（アプリ名）
 st.title("Text-Retouch")
+
+# アプリ説明
+st.info("Text-Retouch は日本語の単語を入力することで、その単語の性質をもとに画像をレタッチするアプリです。例えば、「明るい」「光」といった単語を入力すると画像を明るく、「暗い」「影」といった単語では画像を暗くレタッチすることができます。")
+st.divider()
 
 # 学習済みの日本語ベクトルデータの読み込み
 model = gensim.models.KeyedVectors.load_word2vec_format('entity_vector/entity_vector.model.bin', binary=True)
@@ -52,7 +57,8 @@ def get_similarity_score(target, word_list):
 # img: レタッチ対象の画像
 # lumi_score: 明るさ調整用スコア
 def adjust_luminance(img,lumi_score):
-    alpha = 1.0 + (lumi_score * 5)  # 明るさの修正値を設定
+    adjust_level = 6 # TODO: 調整レベルを5段階で設定できるようにする（2/4/6/8/10）
+    alpha = 1.0 + (lumi_score * adjust_level)  # 明るさの修正値を設定
     # print('alpha: ', alpha)
     return cv2.convertScaleAbs(img, alpha=alpha, beta=0)
 
@@ -72,6 +78,6 @@ if retouch_button and uploaded_file and input_text:
         st.subheader("レタッチ済み画像")
         st.image(retouched_image_rgb, width=400)
     except KeyError:
-        st.error(f"入力されたテキスト {input_text} では画像をレタッチするためのスコアを算出できませんでした。より一般的な単語でお試しください。")
+        st.error(f"入力されたテキスト「{input_text}」では画像をレタッチするためのスコアを算出できませんでした。より一般的な単語でお試しください。")
 
 
