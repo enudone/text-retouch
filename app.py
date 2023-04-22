@@ -8,6 +8,7 @@ uploaded_file = st.sidebar.file_uploader("画像をアップロードしてく�
 input_text = st.sidebar.text_input("レタッチに適用する単語を入力してください")
 retouch_button = st.sidebar.button("レタッチする")
 download_button = st.sidebar.button("編集後の画像をダウンロード")
+st.sidebar.write('このアプリは、東北大学 乾・鈴木研究室が作成した日本語エンティティベクトル（2017年2月1日版）を使用しています。詳細およびダウンロードは、東北大学 乾・鈴木研究室のウェブサイト（ http://www.cl.ecei.tohoku.ac.jp/~m-suzuki/jawiki_vector/ ）で確認ができます。このリソースは CC BY-SA 4.0 の下で提供されています。')
 
 # ページタイトル
 st.title("Text-Retouch")
