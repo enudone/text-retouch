@@ -29,8 +29,14 @@ st.title("Text-Retouch")
 st.info("Text-Retouch は日本語の単語を入力することで、その単語の性質をもとに画像をレタッチするアプリです。例えば、「明るい」「光」といった単語を入力すると画像を明るく、「暗い」「影」といった単語では画像を暗くレタッチすることができます。")
 st.divider()
 
-# 学習済みの日本語ベクトルデータの読み込み
-model = gensim.models.KeyedVectors.load_word2vec_format('entity_vector/entity_vector.model.bin', binary=True)
+# 学習済みの日本語ベクトルデータのロード
+# @st.cache_data でキャッシュ化する
+@st.cache_data
+def load_model():
+    return gensim.models.KeyedVectors.load_word2vec_format('entity_vector/entity_vector.model.bin', binary=True)
+
+# モデルを定義
+model = load_model()
 
 # 入力単語の明るさイメージを判定するためにコサイン類似度を調べる対象の単語リスト
 words_bright = ['明るい', '眩しい', '輝く', '光', '日差し', '白']
