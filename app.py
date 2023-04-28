@@ -4,7 +4,7 @@ import numpy as np
 import gensim
 
 # サイドバーのUI
-uploaded_file = st.sidebar.file_uploader("■画像アップロード", type=["jpg", "png", "jpeg"])
+uploaded_file = st.sidebar.file_uploader("●画像アップロード", type=["jpg", "png", "jpeg"])
 
 if uploaded_file:
     # アップロードされたファイルからバイトデータを読み込み、
@@ -16,7 +16,7 @@ if uploaded_file:
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     st.sidebar.image(image_rgb, width=100) # アップロード画像のプレビュー
 
-input_text = st.sidebar.text_input("■レタッチに適用する単語を入力")
+input_text = st.sidebar.text_input("●レタッチに適用する単語を入力")
 retouch_button = st.sidebar.button("レタッチする")
 # download_button = st.sidebar.button("編集後の画像をダウンロード")
 st.sidebar.divider()
@@ -26,7 +26,7 @@ st.sidebar.write('このアプリは、東北大学 乾・鈴木研究室が作�
 st.title("Text-Retouch")
 
 # アプリ説明
-st.info("Text-Retouch は日本語の単語を入力することで、その単語の性質をもとに画像をレタッチするアプリです。例えば、「明るい」「光」といった単語を入力すると画像を明るく、「暗い」「影」といった単語では画像を暗くレタッチすることができます。")
+st.info("Text-Retouch は日本語の単語を入力することで、その単語の性質やイメージを基に画像をレタッチするアプリです。例えば、「明るい」「光」といった単語で画像を明るく、「暗い」「影」といった単語で画像を暗くレタッチすることができます。")
 st.divider()
 
 # 学習済みの日本語ベクトルデータのロード
