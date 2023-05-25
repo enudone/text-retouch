@@ -108,6 +108,43 @@ def adjust_saturation(image, satu_score):
     # HSVからBGRに変換して返す
     return cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
 
+# 入力単語のカラーイメージを判定するためにコサイン類似度を調べる対象の単語リスト
+words_red = ['赤', 'レッド']
+words_green = ['緑', 'グリーン']
+words_blue = ['青', 'ブルー']
+
+# 写真の彩度の調整用のスコアを算出するメソッド
+# [R, G ,B] の順で平均が 1 の配列を返す
+# 例えば [0.9, 1.2, 0.9] の場合は緑（G）を強調する設定となる
+def get_color_score(input_word):
+    score_c_red = get_similarity_score(input_word, words_red)
+    score_c_green = get_similarity_score(input_word, words_green)
+    score_c_blue = get_similarity_score(input_word, words_blue)
+
+    score_list = [score_c_red, score_c_green, score_c_blue]
+    total = sum(score_list)
+    
+    # 各要素を平均が1になるように調整
+    adjusted_score_list = [element / (total / len(score_list)) for element in score_list]
+
+    return adjusted_score_list
+
+# 色味を調整するメソッド
+def adjust_color(image, red_level, green_level, blue_level):
+    # RGBチャンネルを取得
+    red_channel = image[:, :, 2]
+    green_channel = image[:, :, 1]
+    blue_channel = image[:, :, 0]
+    
+    # RGBチャンネルをそれぞれ調整
+    red_channel_adjusted = np.clip(red_channel * red_level, 0, 255).astype(np.uint8)
+    green_channel_adjusted = np.clip(green_channel * green_level, 0, 255).astype(np.uint8)
+    blue_channel_adjusted = np.clip(blue_channel * blue_level, 0, 255).astype(np.uint8)
+
+    # 調整したチャンネルを結合して新しい画像を作成
+    adjusted_image = cv2.merge((blue_channel_adjusted, green_channel_adjusted, red_channel_adjusted))
+    return adjusted_image
+
 # レタッチボタンが押されたときの処理
 if retouch_button and uploaded_file and input_text:
     try:
@@ -118,6 +155,10 @@ if retouch_button and uploaded_file and input_text:
         # 彩度調整用スコアを取得
         saturation_score = get_saturation_score(input_text)
         # st.write(f"[動作確認]彩度調整用スコア: {saturation_score}")
+
+        # カラー調整用スコアを取得
+        color_score = get_color_score(input_text)
+        # st.write(f"[動作確認]カラー調整用スコア: {color_score}")
 
         # レタッチ済み画像を取得
         retouched_image_rgb = adjust_luminance(image_rgb, luminance_score)
