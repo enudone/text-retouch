@@ -64,6 +64,7 @@ def get_luminance_score(target):
 # lumi_score: 明るさ調整用スコア
 def adjust_luminance(img,lumi_score):
     adjust_level = 6 # TODO: 調整レベルを5段階で設定できるようにする（2/4/6/8/10）
+    # TODO: alpha がマイナスの値にならないようにロジックを改良
     alpha = 1.0 + (lumi_score * adjust_level)  # 明るさの修正値を設定
     # print('alpha: ', alpha)
     return cv2.convertScaleAbs(img, alpha=alpha, beta=0)
