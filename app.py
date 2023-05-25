@@ -69,7 +69,7 @@ def adjust_luminance(img,lumi_score):
     # 1.5 など 1 より大きい値で画像の輝度を上げ、0.5 など 1 より小さい値で輝度を下げる
     # -1.5 といった値を渡すと、マイナスが無視されて 1.5 として扱われる
     alpha = 1.0 + (lumi_score * adjust_level)  # 明るさの修正値を設定
-    
+
     # print('alpha: ', alpha)
     return cv2.convertScaleAbs(img, alpha=alpha, beta=0)
 
@@ -86,12 +86,38 @@ def get_saturation_score(target):
     score_total = score_s_high - score_s_low
     return score_total
 
+# 画像の彩度を調整する関数
+# img: レタッチ対象の画像
+# satu_score: 彩度調整用スコア
+def adjust_saturation(image, satu_score):
+    # BGR画像をHSV色空間に変換
+    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    
+    # 彩度チャンネルを取得
+    saturation = hsv_image[:,:,1]
+    
+    # 彩度を指定したパラメータで調整
+    # スコアが 0.5 など正の値 => 彩度をプラス
+    # スコアが -0.5 など負の値 => 彩度をマイナス
+    level = 2 # 調整のレベル # TODO: レベルを可変にする
+    computed_saturation = np.clip(saturation * ((satu_score * level) + 1), 0, 255).astype(np.uint8)
+    
+    # HSV画像を再構築
+    hsv_image[:,:,1] = computed_saturation
+    
+    # HSVからBGRに変換して返す
+    return cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+
 # レタッチボタンが押されたときの処理
 if retouch_button and uploaded_file and input_text:
     try:
         # 明るさ調整用スコアを取得
         luminance_score = get_luminance_score(input_text)
-        # st.write(f"明るさ調整用スコア: {luminance_score}")
+        # st.write(f"[動作確認]明るさ調整用スコア: {luminance_score}")
+
+        # 彩度調整用スコアを取得
+        saturation_score = get_saturation_score(input_text)
+        # st.write(f"[動作確認]彩度調整用スコア: {saturation_score}")
 
         # レタッチ済み画像を取得
         retouched_image_rgb = adjust_luminance(image_rgb, luminance_score)
