@@ -121,6 +121,7 @@ if retouch_button and uploaded_file and input_text:
 
         # レタッチ済み画像を取得
         retouched_image_rgb = adjust_luminance(image_rgb, luminance_score)
+        retouched_image_rgb = adjust_saturation(retouched_image_rgb, saturation_score)
 
         # 元画像とレタッチ済み画像を表示
         col1, col2 = st.columns(2)  # 2つのカラムを作成
