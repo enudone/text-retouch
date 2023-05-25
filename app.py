@@ -38,6 +38,16 @@ def load_model():
 # モデルを定義
 model = load_model()
 
+# ターゲットとなる単語と任意の単語リストの各単語とのコサイン類似度の平均を算出するメソッド
+def get_similarity_score(target, word_list):
+    total_similarity = 0
+    for word in word_list:
+        try:
+            total_similarity += model.similarity(target, word)
+        except KeyError:
+            raise KeyError # エラーを呼び出し元に伝達
+    return total_similarity / len(word_list)
+
 # 入力単語の明るさイメージを判定するためにコサイン類似度を調べる対象の単語リスト
 words_bright = ['明るい', '眩しい', '輝く', '光', '日差し', '白']
 words_dark = ['暗い', '薄暗い', '陰る', '影', '暗闇', '黒']
@@ -49,16 +59,6 @@ def get_luminance_score(target):
     score_total = score_bright - score_dark
     return score_total
 
-# ターゲットとなる単語と任意の単語リストの各単語とのコサイン類似度の平均を算出するメソッド
-def get_similarity_score(target, word_list):
-    total_similarity = 0
-    for word in word_list:
-        try:
-            total_similarity += model.similarity(target, word)
-        except KeyError:
-            raise KeyError # エラーを呼び出し元に伝達
-    return total_similarity / len(word_list)
-
 # 画像の明るさを調整する関数
 # img: レタッチ対象の画像
 # lumi_score: 明るさ調整用スコア
@@ -67,6 +67,19 @@ def adjust_luminance(img,lumi_score):
     alpha = 1.0 + (lumi_score * adjust_level)  # 明るさの修正値を設定
     # print('alpha: ', alpha)
     return cv2.convertScaleAbs(img, alpha=alpha, beta=0)
+
+# 入力単語の鮮やかさイメージを判定するためにコサイン類似度を調べる対象の単語リスト
+words_saturation_high = ['鮮明','鮮やか','きらびやか','華やか','濃い','カラフル','ビビッド']
+words_saturation_low = ['淡色', '退色', '地味', '控えめ', '薄い', 'モノクロ', 'ソフト']
+
+# 写真の彩度の調整用のスコアを算出するメソッド
+# レタッチに使われる入力変数 target を引数に取る
+# 出力されたスコアが正の数の場合は彩度をプラス補正、負の数の場合はマイナス補正をかける
+def get_saturation_score(target):
+    score_s_high = get_similarity_score(target, words_saturation_high)
+    score_s_low = get_similarity_score(target, words_saturation_low)
+    score_total = score_s_high - score_s_low
+    return score_total
 
 # レタッチボタンが押されたときの処理
 if retouch_button and uploaded_file and input_text:
