@@ -132,17 +132,17 @@ def get_color_score(input_word):
 # 色味を調整するメソッド
 def adjust_color(image, red_level, green_level, blue_level):
     # RGBチャンネルを取得
-    red_channel = image[:, :, 2]
+    red_channel = image[:, :, 0]
     green_channel = image[:, :, 1]
-    blue_channel = image[:, :, 0]
-    
+    blue_channel = image[:, :, 2]
+
     # RGBチャンネルをそれぞれ調整
     red_channel_adjusted = np.clip(red_channel * red_level, 0, 255).astype(np.uint8)
     green_channel_adjusted = np.clip(green_channel * green_level, 0, 255).astype(np.uint8)
     blue_channel_adjusted = np.clip(blue_channel * blue_level, 0, 255).astype(np.uint8)
 
     # 調整したチャンネルを結合して新しい画像を作成
-    adjusted_image = cv2.merge((blue_channel_adjusted, green_channel_adjusted, red_channel_adjusted))
+    adjusted_image = cv2.merge((red_channel_adjusted, green_channel_adjusted, blue_channel_adjusted))
     return adjusted_image
 
 # レタッチボタンが押されたときの処理
