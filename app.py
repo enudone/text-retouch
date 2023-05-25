@@ -157,12 +157,15 @@ if retouch_button and uploaded_file and input_text:
         # st.write(f"[動作確認]彩度調整用スコア: {saturation_score}")
 
         # カラー調整用スコアを取得
-        color_score = get_color_score(input_text)
-        # st.write(f"[動作確認]カラー調整用スコア: {color_score}")
+        red_level, green_level, blue_level = get_color_score(input_text)
+        # st.write(f"[動作確認]カラー調整用スコア 赤: {red_level}")
+        # st.write(f"[動作確認]カラー調整用スコア 緑: {green_level}")
+        # st.write(f"[動作確認]カラー調整用スコア 青: {blue_level}")
 
         # レタッチ済み画像を取得
         retouched_image_rgb = adjust_luminance(image_rgb, luminance_score)
         retouched_image_rgb = adjust_saturation(retouched_image_rgb, saturation_score)
+        retouched_image_rgb = adjust_color(retouched_image_rgb, red_level=red_level, green_level=green_level, blue_level=blue_level)
 
         # 元画像とレタッチ済み画像を表示
         col1, col2 = st.columns(2)  # 2つのカラムを作成
