@@ -16,6 +16,12 @@ if uploaded_file:
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     st.sidebar.image(image_rgb, width=100) # アップロード画像のプレビュー
 
+# チェックボックスのUI
+st.sidebar.write('●調整項目の指定')
+brightness_check = st.sidebar.checkbox("明るさ", value=True)
+saturation_check = st.sidebar.checkbox("彩度", value=True)
+color_check = st.sidebar.checkbox("カラー", value=True)
+
 input_text = st.sidebar.text_input("●レタッチに適用する単語を入力")
 retouch_button = st.sidebar.button("レタッチする")
 # download_button = st.sidebar.button("編集後の画像をダウンロード")
