@@ -154,24 +154,28 @@ def adjust_color(image, red_level, green_level, blue_level):
 # レタッチボタンが押されたときの処理
 if retouch_button and uploaded_file and input_text:
     try:
-        # 明るさ調整用スコアを取得
-        luminance_score = get_luminance_score(input_text)
-        # st.write(f"[動作確認]明るさ調整用スコア: {luminance_score}")
+        # 初期画像を設定
+        retouched_image_rgb = image_rgb
 
-        # 彩度調整用スコアを取得
-        saturation_score = get_saturation_score(input_text)
-        # st.write(f"[動作確認]彩度調整用スコア: {saturation_score}")
+        if brightness_check:  # 明るさのチェックボックスがONのとき
+            # 明るさ調整用スコアの取得と画像の更新
+            luminance_score = get_luminance_score(input_text)
+            retouched_image_rgb = adjust_luminance(retouched_image_rgb, luminance_score)
+            st.write(f"[動作確認]明るさ調整用スコア: {luminance_score}")
 
-        # カラー調整用スコアを取得
-        red_level, green_level, blue_level = get_color_score(input_text)
-        # st.write(f"[動作確認]カラー調整用スコア 赤: {red_level}")
-        # st.write(f"[動作確認]カラー調整用スコア 緑: {green_level}")
-        # st.write(f"[動作確認]カラー調整用スコア 青: {blue_level}")
+        if saturation_check:  # 彩度のチェックボックスがONのとき
+            # 彩度調整用スコアの取得と画像の更新
+            saturation_score = get_saturation_score(input_text)
+            retouched_image_rgb = adjust_saturation(retouched_image_rgb, saturation_score)
+            st.write(f"[動作確認]彩度調整用スコア: {saturation_score}")
 
-        # レタッチ済み画像を取得
-        retouched_image_rgb = adjust_luminance(image_rgb, luminance_score)
-        retouched_image_rgb = adjust_saturation(retouched_image_rgb, saturation_score)
-        retouched_image_rgb = adjust_color(retouched_image_rgb, red_level=red_level, green_level=green_level, blue_level=blue_level)
+        if color_check:  # カラーのチェックボックスがONのとき
+            # カラー調整用スコアの取得と画像の更新
+            red_level, green_level, blue_level = get_color_score(input_text)
+            retouched_image_rgb = adjust_color(retouched_image_rgb, red_level=red_level, green_level=green_level, blue_level=blue_level)
+            st.write(f"[動作確認]カラー調整用スコア 赤: {red_level}")
+            st.write(f"[動作確認]カラー調整用スコア 緑: {green_level}")
+            st.write(f"[動作確認]カラー調整用スコア 青: {blue_level}")
 
         # 元画像とレタッチ済み画像を表示
         col1, col2 = st.columns(2)  # 2つのカラムを作成
